@@ -477,7 +477,8 @@ function Get-PlatformType()
     # EC2
     $restError = $null
     Try {
-        $awsNodeName=Invoke-RestMethod -uri http://169.254.169.254/latest/meta-data/local-hostname -ErrorAction Ignore
+        $token = Invoke-RestMethod -Headers @{"X-aws-ec2-metadata-token-ttl-seconds" = "21600"} -Method PUT -Uri http://169.254.169.254/latest/api/token -ErrorAction Ignore
+        $awsNodeName = Invoke-RestMethod -Headers @{"X-aws-ec2-metadata-token" = $token} -uri http://169.254.169.254/latest/meta-data/local-hostname -ErrorAction Ignore
     } Catch {
         $restError = $_
     }
